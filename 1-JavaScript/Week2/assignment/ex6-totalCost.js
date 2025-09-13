@@ -34,7 +34,7 @@ function calculateTotalPrice(cartObj) {
     finalPrice += cartObj[item]
   }
 
-  return `Total: ${finalPrice}.`
+  return `Total: ${finalPrice.toFixed(2)}.`
 }
 
 // ! Test functions (plain vanilla JavaScript)
