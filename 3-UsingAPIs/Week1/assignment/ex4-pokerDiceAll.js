@@ -27,9 +27,9 @@ exercise file.
 import { rollDie } from '../../helpers/pokerDiceRoller.js';
 
 export function rollDice() {
-  // TODO Refactor this function
   const dice = [1, 2, 3, 4, 5];
-  return rollDie(1);
+  const promises = dice.map(() => rollDie());
+  return Promise.all(promises);
 }
 
 function main() {
@@ -43,4 +43,7 @@ if (process.env.NODE_ENV !== 'test') {
   main();
 }
 
-// TODO Replace this comment by your explanation that was asked for in the assignment description.
+/*
+Promise.all rejects early, but it does not stop or cancel the other
+promises, therefore unfinished dice keep rolling and logging.
+*/

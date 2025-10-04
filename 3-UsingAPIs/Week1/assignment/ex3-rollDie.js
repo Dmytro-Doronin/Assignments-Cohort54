@@ -9,49 +9,38 @@ Full description at: https://github.com/HackYourFuture/Assignments/tree/main/3-U
 - Does the problem described above still occur? If not, what would be your
   explanation? Add your answer as a comment to be bottom of the file.
 ------------------------------------------------------------------------------*/
+export function rollDie() {
 
-// TODO Remove callback and return a promise
-export function rollDie(callback) {
-  // Compute a random number of rolls (3-10) that the die MUST complete
-  const randomRollsToDo = Math.floor(Math.random() * 8) + 3;
-  console.log(`Die scheduled for ${randomRollsToDo} rolls...`);
+  return new Promise((resolve, reject) => {
+    const randomRollsToDo = Math.floor(Math.random() * 8) + 3;
+    console.log(`Die scheduled for ${randomRollsToDo} rolls...`);
 
-  const rollOnce = (roll) => {
-    // Compute a random die value for the current roll
-    const value = Math.floor(Math.random() * 6) + 1;
-    console.log(`Die value is now: ${value}`);
+    const rollOnce = (roll) => {
+      // Compute a random die value for the current roll
+      const value = Math.floor(Math.random() * 6) + 1;
+      console.log(`Die value is now: ${value}`);
 
-    // Use callback to notify that the die rolled off the table after 6 rolls
-    if (roll > 6) {
-      // TODO replace "error" callback
-      callback(new Error('Oops... Die rolled off the table.'));
-    }
+      // Use callback to notify that the die rolled off the table after 6 rolls
+      if (roll > 6) {
+        reject(new Error('Oops... Die rolled off the table.'));
+      }
 
-    // Use callback to communicate the final die value once finished rolling
-    if (roll === randomRollsToDo) {
-      // TODO replace "success" callback
-      callback(null, value);
-    }
-
-    // Schedule the next roll todo until no more rolls to do
-    if (roll < randomRollsToDo) {
-      setTimeout(() => rollOnce(roll + 1), 500);
-    }
-  };
-
-  // Start the initial roll
-  rollOnce(1);
+      // Use callback to communicate the final die value once finished rolling
+      if (roll === randomRollsToDo) {
+        resolve(value);
+      }
+      if (roll < randomRollsToDo) {
+        setTimeout(() => rollOnce(roll + 1), 500);
+      }
+    };
+    rollOnce(1);
+  })
 }
 
-function main() {
-  // TODO Refactor to use promise
-  rollDie((error, value) => {
-    if (error !== null) {
-      console.log(error.message);
-    } else {
-      console.log(`Success! Die settled on ${value}.`);
-    }
-  });
+async function main() {
+  await rollDie()
+    .then((value) => console.log(`Success! Die settled on ${value}.`))
+    .catch((error) => console.log(error));
 }
 
 // ! Do not change or remove the code below
@@ -59,4 +48,13 @@ if (process.env.NODE_ENV !== 'test') {
   main();
 }
 
-// TODO Replace this comment by your explanation that was asked for in the assignment description.
+// In the callback version, the problem occurred because the function could trigger both an “error”
+// (after more than 6 rolls) and a “success” (when it reached randomRollsToDo),
+// since the callback was simply invoked multiple times.
+//
+// Promises follow a different rule: a promise can be settled
+// (resolved or rejected) only once. Any subsequent calls to resolve/reject
+// are ignored by the specification. Therefore, even if we keep “rolling”
+// the die and logging values after a reject, the promise won’t complete
+// a second time—there’s no “double” result. In the code above, this is
+// additionally safeguarded by a settled flag to avoid attempting to call resolve/reject
