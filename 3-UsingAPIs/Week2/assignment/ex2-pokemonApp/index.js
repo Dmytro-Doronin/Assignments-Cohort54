@@ -21,18 +21,67 @@ Use async/await and try/catch to handle promises.
 Try and avoid using global variables. As much as possible, try and use function 
 parameters and return values to pass data back and forth.
 ------------------------------------------------------------------------------*/
-function fetchData(/* TODO parameter(s) go here */) {
-  // TODO complete this function
+async function fetchData(url) {
+    try {
+        const response = await fetch(url)
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+
+        return await response.json()
+    } catch (error) {
+        console.error("Fetch error:", error)
+        throw error
+    }
 }
 
-function fetchAndPopulatePokemons(/* TODO parameter(s) go here */) {
-  // TODO complete this function
+function fetchAndPopulatePokemons(data, select) {
+    select.innerHTML = ''
+    data.forEach((item) => {
+        const option = document.createElement('option')
+        option.value = item.url
+        option.textContent  = item.name
+        select.appendChild(option)
+    })
 }
 
-function fetchImage(/* TODO parameter(s) go here */) {
-  // TODO complete this function
+async function fetchImage(url) {
+   const response = await fetchData(url)
+
+    let img = document.querySelector('#pokemon-image')
+
+    if (!img) {
+        img = document.createElement('img')
+        img.id = 'pokemon-image'
+        img.alt = 'Pokemon'
+        document.body.appendChild(img)
+    }
+
+    if (response?.sprites?.front_default) {
+        img.src = response.sprites.front_default
+    } else {
+        img.src = ''
+        img.alt = 'No image available'
+    }
 }
 
-function main() {
-  // TODO complete this function
+async function main() {
+    const button = document.createElement('button')
+    button.textContent = 'Get Pokemon!'
+    document.body.appendChild(button)
+
+    const select = document.createElement('select')
+    document.body.appendChild(select)
+
+    select.addEventListener('change', async (event) => {
+        const selectedValue = event.target.value
+        await fetchImage(selectedValue)
+    })
+
+    button.addEventListener('click', async () => {
+        const data = await fetchData('https://pokeapi.co/api/v2/pokemon?limit=151')
+        fetchAndPopulatePokemons(data.results, select)
+    })
 }
+main()
