@@ -14,16 +14,18 @@ import { rollDie } from '../../helpers/pokerDiceRoller.js';
 /** @import {DieFace} from "../../helpers/pokerDiceRoller.js" */
 
 export function rollDice() {
-  const dice = [1, 2, 3, 4, 5];
-  // TODO complete this function; use Promise.race() and rollDie()
-  rollDie(1); // TODO placeholder: modify as appropriate
+    const dice = [1, 2, 3, 4, 5]
+    const dicePromises = dice.map(() => rollDie())
+    return Promise.race(dicePromises)
 }
 
-// Refactor this function to use async/await and try/catch
-function main() {
-  rollDice()
-    .then((results) => console.log('Resolved!', results))
-    .catch((error) => console.log('Rejected!', error.message));
+async function main() {
+    try {
+        const result = await rollDice()
+        console.log('Resolved!', result)
+    } catch (error) {
+        console.log('Rejected!', error.message)
+    }
 }
 
 // ! Do not change or remove the code below
@@ -31,4 +33,9 @@ if (process.env.NODE_ENV !== 'test') {
   main();
 }
 
-// TODO Replace this comment by your explanation that was asked for in the assignment description.
+/*
+Some dice continue rolling even after Promise.race() resolves because
+Promise.race() only returns the *first settled* promise (the fastest one).
+It does not cancel or stop the other promises — they keep running in
+the background until they finish naturally.
+*/

@@ -17,21 +17,23 @@ import { rollDie } from '../../helpers/pokerDiceRoller.js';
  * @param {DieFace} desiredValue
  * @returns {Promise<DieFace>}
  */
-export function rollDieUntil(desiredValue) {
-  // TODO rewrite this function using async/await
-  return rollDie().then((value) => {
-    if (value !== desiredValue) {
-      return rollDieUntil(desiredValue);
+export async function rollDieUntil(desiredValue) {
+    while (true) {
+        const value = await rollDie()
+
+        if (value === desiredValue) {
+            return value
+        }
     }
-    return value;
-  });
 }
 
-// TODO refactor this function to use try/catch
-function main() {
-  rollDieUntil('ACE')
-    .then((results) => console.log('Resolved!', results))
-    .catch((error) => console.log('Rejected!', error.message));
+async function main() {
+    try {
+        const result = await rollDieUntil('ACE')
+        console.log('Resolved!', result)
+    } catch (error) {
+        console.log('Rejected!', error.message)
+    }
 }
 
 // ! Do not change or remove the code below
