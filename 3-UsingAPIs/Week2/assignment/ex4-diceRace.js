@@ -15,14 +15,13 @@ import { rollDie } from '../../helpers/pokerDiceRoller.js';
 
 export function rollDice() {
     const dice = [1, 2, 3, 4, 5]
-    const dicePromises = dice.map(() => rollDie())
+    const dicePromises = dice.map((number) => rollDie(number))
     return Promise.race(dicePromises)
 }
 
 async function main() {
     try {
-        const result = await rollDice()
-        console.log('Resolved!', result)
+        await rollDice()
     } catch (error) {
         console.log('Rejected!', error.message)
     }
@@ -36,6 +35,6 @@ if (process.env.NODE_ENV !== 'test') {
 /*
 Some dice continue rolling even after Promise.race() resolves because
 Promise.race() only returns the *first settled* promise (the fastest one).
-It does not cancel or stop the other promises — they keep running in
+It does not cancel or stop the other promises - they keep running in
 the background until they finish naturally.
 */
