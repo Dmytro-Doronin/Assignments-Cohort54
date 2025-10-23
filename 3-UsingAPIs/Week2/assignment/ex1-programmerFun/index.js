@@ -17,8 +17,18 @@ Full description at: https://github.com/HackYourFuture/Assignments/blob/main/3-U
    should result in a network (DNS) error.
 ------------------------------------------------------------------------------*/
 async function requestData(url) {
-  const response = await fetch(url);
-  return await response.json();
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error('Something went wrong');
+    }
+
+    return await response.json();
+  } catch (e) {
+    console.error("Fetch error:", e)
+    throw e
+  }
 }
 
 function renderImage(data) {
