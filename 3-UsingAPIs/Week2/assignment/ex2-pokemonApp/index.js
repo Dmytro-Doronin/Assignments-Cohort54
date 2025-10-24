@@ -49,7 +49,6 @@ async function fetchAndPopulatePokemons(select) {
     })
   } catch (e) {
     console.error("Fetch error:", e)
-    throw e
   }
 }
 
@@ -76,7 +75,6 @@ async function fetchImage(url) {
 
   } catch (e) {
     console.error("Fetch error:", e)
-    throw e
   }
 
 }
